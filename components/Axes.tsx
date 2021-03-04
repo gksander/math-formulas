@@ -1,5 +1,8 @@
 import * as React from "react";
+import { v4 as uuidv4 } from "uuid";
 import { useBoardContext } from "./Board";
+import { ArrowHeadMarkerDefs } from "./ArrowHeadMarkerDefs";
+import { useUuid } from "../utils/useUuid";
 
 /**
  * Axes class
@@ -7,25 +10,34 @@ import { useBoardContext } from "./Board";
 class Axes {
   constructor() {}
 
-  Render = () => <AxesDisplay />;
+  Render = (ops: AxesDisplayProps) => <AxesDisplay {...ops} />;
 }
 
 /**
  * Axes display
  */
-type AxesDisplayProps = {};
-const AxesDisplay: React.FC<AxesDisplayProps> = () => {
+type AxesDisplayProps = {
+  stroke?: string;
+  tickDistance?: number;
+};
+
+const AxesDisplay: React.FC<AxesDisplayProps> = ({ stroke = "gray" }) => {
   const { xMin, xMax, yMin, yMax, transformX, transformY } = useBoardContext();
+  const id = useUuid();
 
   return (
     <React.Fragment>
+      {/* Defs that can be used inside the SVG */}
+      <ArrowHeadMarkerDefs id={id} color={stroke} />
       <line
         x1={transformX(xMin)}
         y1={transformY(0)}
         x2={transformX(xMax)}
         y2={transformY(0)}
         strokeWidth={0.4}
-        stroke="gray"
+        stroke={stroke}
+        markerStart={`url(#arrowStart-${id})`}
+        markerEnd={`url(#arrowEnd-${id})`}
       />
       <line
         x1={transformX(0)}
@@ -33,7 +45,9 @@ const AxesDisplay: React.FC<AxesDisplayProps> = () => {
         x2={transformX(0)}
         y2={transformY(yMax)}
         strokeWidth={0.4}
-        stroke="gray"
+        stroke={stroke}
+        markerStart={`url(#arrowStart-${id})`}
+        markerEnd={`url(#arrowEnd-${id})`}
       />
     </React.Fragment>
   );

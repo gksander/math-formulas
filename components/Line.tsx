@@ -2,6 +2,8 @@ import * as React from "react";
 import { IPoint } from "../types";
 import { useBoardContext } from "./Board";
 import { Point } from "./Point";
+import { useUuid } from "../utils/useUuid";
+import { ArrowHeadMarkerDefs } from "./ArrowHeadMarkerDefs";
 
 class Line {
   start: Point;
@@ -28,6 +30,7 @@ type LineDisplayProps = {
 
 export const LineDisplay: React.FC<LineDisplayProps> = ({ start, end }) => {
   const { xMin, xMax, yMin, yMax, transformX, transformY } = useBoardContext();
+  const id = useUuid();
 
   const coords = React.useMemo<
     undefined | [number, number, number, number]
@@ -121,14 +124,19 @@ export const LineDisplay: React.FC<LineDisplayProps> = ({ start, end }) => {
   const [x1, y1, x2, y2] = coords;
 
   return (
-    <line
-      x1={transformX(x1)}
-      y1={transformY(y1)}
-      x2={transformX(x2)}
-      y2={transformY(y2)}
-      strokeWidth={1}
-      stroke="black"
-    />
+    <React.Fragment>
+      <ArrowHeadMarkerDefs id={id} color="black" />
+      <line
+        x1={transformX(x1)}
+        y1={transformY(y1)}
+        x2={transformX(x2)}
+        y2={transformY(y2)}
+        strokeWidth={1}
+        stroke="black"
+        markerStart={`url(#arrowStart-${id})`}
+        markerEnd={`url(#arrowEnd-${id})`}
+      />
+    </React.Fragment>
   );
 };
 

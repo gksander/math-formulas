@@ -12,7 +12,7 @@ type HomePageProps = {};
 export const HomePage: React.FC<HomePageProps> = () => {
   const [y, setY] = React.useState(5);
 
-  const [tt, setTt] = React.useState(0);
+  const [_tt, setTt] = React.useState(0);
   React.useEffect(() => {
     const i = setInterval(() => setTt((v) => v + 1), 1000);
     return () => {
@@ -43,13 +43,13 @@ export const HomePage: React.FC<HomePageProps> = () => {
       <div style={{ width: 300, height: 300, border: "1px solid black" }}>
         <Board>
           <line x1={0} x2={5} y1={3} y2={3} />
-          <Axes.Render />
-          <LS.Render stroke="purple" />
+          <Axes.Render stroke="blue" />
           <L.Render />
-          <C.Render />
+          <LS.Render stroke="purple" />
+          {/*<C.Render />*/}
           <A.Render fill="green" />
           <B.Render />
-          <Poly.Render />
+          {/*<Poly.Render />*/}
         </Board>
       </div>
     </div>
