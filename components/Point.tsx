@@ -34,8 +34,8 @@ const PointDisplay: React.FC<PointDisplayProps> = ({ x, y, fill = "red" }) => {
       <foreignObject
         x={transformX(x)}
         y={transformY(y)}
-        width="20%"
-        height="20%"
+        width="100%"
+        height="100%"
         style={{ display: "flex" }}
       >
         <span style={{ fontSize: 4 }}>
