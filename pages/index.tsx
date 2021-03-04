@@ -3,21 +3,32 @@ import { Board } from "../components/Board";
 import { usePoint } from "../components/Point";
 import { useAxes } from "../components/Axes";
 import { useLineSegment } from "../components/LineSegment";
-import { Tex } from "../components/Tex";
 import { useCircle } from "../components/Circle";
 import { useLine } from "../components/Line";
+import { usePolygon } from "../components/Polygon";
 
 type HomePageProps = {};
 
 export const HomePage: React.FC<HomePageProps> = () => {
-  const [y, setY] = React.useState(3);
+  const [y, setY] = React.useState(5);
+
+  const [tt, setTt] = React.useState(0);
+  React.useEffect(() => {
+    const i = setInterval(() => setTt((v) => v + 1), 1000);
+    return () => {
+      clearInterval(i);
+    };
+  }, []);
 
   const Axes = useAxes();
-  const A = usePoint(-1, -2);
+  const A = usePoint(-1, 2);
   const B = usePoint(5, y);
+  const D = usePoint(-10, 10);
+  const E = usePoint(-10, -10);
   const LS = useLineSegment(A, B);
   const L = useLine(A, B);
   const C = useCircle({ center: A, passesThroughPoint: B });
+  const Poly = usePolygon([E, B, A, D]);
 
   return (
     <div style={{ padding: "40px" }}>
@@ -31,12 +42,14 @@ export const HomePage: React.FC<HomePageProps> = () => {
       <br />
       <div style={{ width: 300, height: 300, border: "1px solid black" }}>
         <Board>
+          <line x1={0} x2={5} y1={3} y2={3} />
           <Axes.Render />
           <LS.Render stroke="purple" />
           <L.Render />
+          <C.Render />
           <A.Render fill="green" />
           <B.Render />
-          <C.Render />
+          <Poly.Render />
         </Board>
       </div>
     </div>
