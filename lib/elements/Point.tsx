@@ -1,16 +1,40 @@
 import * as React from "react";
 import { atom, useAtom, WritableAtom } from "jotai";
-import { IPoint } from "../types";
+import { IPoint, NumberAtom } from "../types";
 import { useBoardContext } from "../useBoard";
 
 /**
  * Point class
  */
 export class Point {
+  x: NumberAtom;
+  y: NumberAtom;
   coordsAtom: WritableAtom<IPoint, (prev: IPoint) => IPoint>;
 
-  constructor(x: number, y: number) {
-    this.coordsAtom = atom({ x, y });
+  constructor(x: number | NumberAtom, y: number | NumberAtom) {
+    this.x =
+      typeof x === "number"
+        ? atom(x)
+        : atom(
+            (get) => get(x),
+            () => null,
+          );
+    this.y =
+      typeof y === "number"
+        ? atom(y)
+        : atom(
+            (get) => get(y),
+            () => null,
+          );
+
+    this.coordsAtom = atom(
+      (get) => ({ x: get(this.x), y: get(this.y) }),
+      (get, set, arg) => {
+        const newCoords = arg({ x: get(this.x), y: get(this.y) });
+        set(this.x, newCoords.x);
+        set(this.y, newCoords.y);
+      },
+    );
   }
 }
 

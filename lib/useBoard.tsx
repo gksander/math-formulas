@@ -1,10 +1,11 @@
 import * as React from "react";
 import { Point, PointDisplay } from "./elements/Point";
-import { CoordinateTransformer } from "./types";
+import { CoordinateTransformer, NumberAtom } from "./types";
 import { Provider } from "jotai";
 import { Axes, AxesDisplay } from "./elements/Axes";
 import { LineSegment, LineSegmentDisplay } from "./elements/LineSegment";
 import { Line, LineDisplay } from "./elements/Line";
+import { Circle, CircleDisplay, CircleRadius } from "./elements/Circle";
 
 /**
  * API for using board
@@ -14,7 +15,7 @@ export const useBoard = (
   { xMin = -10, xMax = 10, yMin = -10, yMax = 10 }: BoardConfig,
 ) => {
   const [elements, setElements] = React.useState<
-    (Axes | Point | LineSegment | Line)[]
+    (Axes | Point | LineSegment | Line | Circle)[]
   >([]);
   const svgRef = React.useRef<SVGSVGElement>();
 
@@ -31,12 +32,15 @@ export const useBoard = (
     };
 
     const axes = () => addElement(new Axes());
-    const point = (x: number, y: number) => addElement(new Point(x, y));
+    const point = (x: number | NumberAtom, y: number | NumberAtom) =>
+      addElement(new Point(x, y));
     const lineSegment = (start: Point, end: Point) =>
       addElement(new LineSegment(start, end));
     const line = (start: Point, end: Point) => addElement(new Line(start, end));
+    const circle = (center: Point, radius: CircleRadius) =>
+      addElement(new Circle(center, radius));
 
-    fn({ point, axes, lineSegment, line });
+    fn({ point, axes, lineSegment, line, circle });
 
     setElements(
       newElements.sort((a, b) => {
@@ -91,6 +95,8 @@ export const useBoard = (
               return <LineSegmentDisplay lineSegment={el} key={i} />;
             } else if (el instanceof Line) {
               return <LineDisplay line={el} key={i} />;
+            } else if (el instanceof Circle) {
+              return <CircleDisplay circle={el} key={i} />;
             }
           })}
         </svg>
@@ -103,9 +109,10 @@ const SIZE = 50;
 
 type BoardGenerator = (helpers: {
   axes: () => Axes;
-  point: (x: number, y: number) => Point;
+  point: (x: number | NumberAtom, y: number | NumberAtom) => Point;
   lineSegment: (start: Point, end: Point) => LineSegment;
   line: (start: Point, end: Point) => Line;
+  circle: (center: Point, radius: CircleRadius) => Circle;
 }) => void;
 
 type BoardConfig = {

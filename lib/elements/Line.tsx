@@ -20,8 +20,10 @@ type LineDisplayProps = {
 };
 export const LineDisplay: React.FC<LineDisplayProps> = ({ line }) => {
   const { xMin, xMax, yMin, yMax, transformX, transformY } = useBoardContext();
-  const [{ x: xi, y: yi }] = useAtom(line.start.coordsAtom);
-  const [{ x: xf, y: yf }] = useAtom(line.end.coordsAtom);
+  const [xi] = useAtom(line.start.x);
+  const [yi] = useAtom(line.start.y);
+  const [xf] = useAtom(line.end.x);
+  const [yf] = useAtom(line.end.y);
   const id = "foobar";
 
   const coords = React.useMemo<

@@ -26,8 +26,10 @@ export const LineSegmentDisplay: React.FC<LineSegmentDisplayProps> = ({
   lineSegment,
 }) => {
   const { transformX, transformY } = useBoardContext();
-  const [{ x: xi, y: yi }] = useAtom(lineSegment.start.coordsAtom);
-  const [{ x: xf, y: yf }] = useAtom(lineSegment.end.coordsAtom);
+  const [xi] = useAtom(lineSegment.start.x);
+  const [yi] = useAtom(lineSegment.start.y);
+  const [xf] = useAtom(lineSegment.end.x);
+  const [yf] = useAtom(lineSegment.end.y);
 
   return (
     <line
