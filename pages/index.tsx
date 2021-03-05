@@ -8,7 +8,7 @@ export const HomePage: React.FC<HomePageProps> = () => {
     React.useCallback(({ point, axes, lineSegment }) => {
       axes();
       const A = point(-3, 0);
-      const B = point(4, 3);
+      const B = point(9, 3);
 
       lineSegment(A, B);
     }, []),

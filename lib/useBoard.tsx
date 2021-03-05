@@ -15,16 +15,9 @@ export const useBoard = (
   const [elements, setElements] = React.useState<
     (Axes | Point | LineSegment)[]
   >([]);
+  const svgRef = React.useRef<SVGSVGElement>();
 
   // Transformers, mapping Euclid -> SVG coords
-  const transformX: CoordinateTransformer = React.useCallback(
-    (x: number): number => -SIZE + ((x - xMin) / (xMax - xMin)) * 2 * SIZE,
-    [xMin, xMax],
-  );
-  const transformY: CoordinateTransformer = React.useCallback(
-    (y: number): number => SIZE - ((y - yMin) / (yMax - yMin)) * 2 * SIZE,
-    [yMin, yMax],
-  );
 
   /**
    * Building board based on generating fn
@@ -42,21 +35,51 @@ export const useBoard = (
       addElement(new LineSegment(start, end));
 
     fn({ point, axes, lineSegment });
-    setElements(newElements);
+
+    setElements(
+      newElements.sort((a, b) => {
+        if (a instanceof Point) {
+          return 1;
+        }
+        if (b instanceof Point) {
+          return -1;
+        }
+        return 0;
+      }),
+    );
   }, [fn]);
 
   /**
    * Provide some values so components can do _maths_
    */
-  const value: BoardContextValue = React.useMemo(
-    () => ({ transformX, transformY, xMin, xMax, yMin, yMax }),
-    [transformX, transformY, xMin, xMax, yMin, yMax],
-  );
+  const value: BoardContextValue = React.useMemo(() => {
+    const transformX: CoordinateTransformer = (xCartesian: number): number =>
+      -SIZE + ((xCartesian - xMin) / (xMax - xMin)) * 2 * SIZE;
+    const untransformX: CoordinateTransformer = (xSvg) =>
+      ((xSvg + SIZE) / (2 * SIZE)) * (xMax - xMin) + xMin;
+
+    const transformY: CoordinateTransformer = (yCartesian: number): number =>
+      SIZE - ((yCartesian - yMin) / (yMax - yMin)) * 2 * SIZE;
+    const untransformY: CoordinateTransformer = (ySvg) =>
+      ((SIZE - ySvg) / (2 * SIZE)) * (yMax - yMin) + yMin;
+
+    return {
+      transformX,
+      untransformX,
+      transformY,
+      untransformY,
+      xMin,
+      xMax,
+      yMin,
+      yMax,
+      svgRef,
+    };
+  }, [xMin, xMax, yMin, yMax]);
 
   return (
     <Provider>
       <BoardContext.Provider value={value}>
-        <svg viewBox={`${-SIZE} ${-SIZE} ${2 * SIZE} ${2 * SIZE}`}>
+        <svg viewBox={`${-SIZE} ${-SIZE} ${2 * SIZE} ${2 * SIZE}`} ref={svgRef}>
           {elements.map((el, i) => {
             if (el instanceof Axes) {
               return <AxesDisplay key={i} />;
@@ -90,18 +113,24 @@ type BoardConfig = {
 type BoardContextValue = {
   transformX: CoordinateTransformer;
   transformY: CoordinateTransformer;
+  untransformX: CoordinateTransformer;
+  untransformY: CoordinateTransformer;
   xMin: number;
   xMax: number;
   yMin: number;
   yMax: number;
+  svgRef: React.MutableRefObject<SVGSVGElement> | null;
 };
 const BoardContext = React.createContext<BoardContextValue>({
   transformX: (x) => x,
   transformY: (y) => y,
+  untransformX: (x) => x,
+  untransformY: (y) => y,
   xMin: 0,
   xMax: 0,
   yMin: 0,
   yMax: 0,
+  svgRef: null,
 });
 
 export const useBoardContext = () => React.useContext(BoardContext);

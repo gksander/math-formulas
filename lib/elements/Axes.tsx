@@ -1,16 +1,18 @@
 import * as React from "react";
 import { useBoardContext } from "../useBoard";
+import { ArrowHeadMarkerDefs } from "./ArrowHeadMarkerDefs";
 
 export class Axes {}
 
 type AxesDisplayProps = {};
 export const AxesDisplay: React.FC<AxesDisplayProps> = () => {
   const { xMin, xMax, yMin, yMax, transformX, transformY } = useBoardContext();
-  const stroke = "gray";
-  const id = "axes";
+  const stroke = "gray"; // TODO: Should be configurable
+  const id = "axes"; // TODO: Should not be hardcoded?
 
   return (
     <React.Fragment>
+      <ArrowHeadMarkerDefs id={id} color={stroke} />
       <line
         x1={transformX(xMin)}
         y1={transformY(0)}
