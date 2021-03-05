@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "jotai": "^0.15.1",
     "katex": "^0.12.0",
     "next": "10.0.7",
     "react": "17.0.1",
