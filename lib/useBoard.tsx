@@ -4,6 +4,7 @@ import { CoordinateTransformer } from "./types";
 import { Provider } from "jotai";
 import { Axes, AxesDisplay } from "./elements/Axes";
 import { LineSegment, LineSegmentDisplay } from "./elements/LineSegment";
+import { Line, LineDisplay } from "./elements/Line";
 
 /**
  * API for using board
@@ -13,7 +14,7 @@ export const useBoard = (
   { xMin = -10, xMax = 10, yMin = -10, yMax = 10 }: BoardConfig,
 ) => {
   const [elements, setElements] = React.useState<
-    (Axes | Point | LineSegment)[]
+    (Axes | Point | LineSegment | Line)[]
   >([]);
   const svgRef = React.useRef<SVGSVGElement>();
 
@@ -33,8 +34,9 @@ export const useBoard = (
     const point = (x: number, y: number) => addElement(new Point(x, y));
     const lineSegment = (start: Point, end: Point) =>
       addElement(new LineSegment(start, end));
+    const line = (start: Point, end: Point) => addElement(new Line(start, end));
 
-    fn({ point, axes, lineSegment });
+    fn({ point, axes, lineSegment, line });
 
     setElements(
       newElements.sort((a, b) => {
@@ -87,6 +89,8 @@ export const useBoard = (
               return <PointDisplay point={el} key={i} />;
             } else if (el instanceof LineSegment) {
               return <LineSegmentDisplay lineSegment={el} key={i} />;
+            } else if (el instanceof Line) {
+              return <LineDisplay line={el} key={i} />;
             }
           })}
         </svg>
@@ -101,6 +105,7 @@ type BoardGenerator = (helpers: {
   axes: () => Axes;
   point: (x: number, y: number) => Point;
   lineSegment: (start: Point, end: Point) => LineSegment;
+  line: (start: Point, end: Point) => Line;
 }) => void;
 
 type BoardConfig = {

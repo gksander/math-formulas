@@ -5,12 +5,14 @@ type HomePageProps = {};
 
 export const HomePage: React.FC<HomePageProps> = () => {
   const Board = useBoard(
-    React.useCallback(({ point, axes, lineSegment }) => {
+    React.useCallback(({ point, axes, lineSegment, line }) => {
       axes();
-      const A = point(-3, 0);
+      const A = point(-3, 3);
       const B = point(9, 3);
+      const O = point(0, 0);
 
-      lineSegment(A, B);
+      line(A, B);
+      lineSegment(O, A);
     }, []),
     {},
   );

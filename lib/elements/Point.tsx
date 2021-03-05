@@ -39,30 +39,19 @@ export const PointDisplay: React.FC<PointDisplayProps> = ({ point }) => {
   const handlePointerDown: React.PointerEventHandler<SVGCircleElement> = React.useCallback(
     (e) => {
       e.preventDefault();
-      let tmpPoint = svgRef?.current?.createSVGPoint();
-      tmpPoint.x = e.clientX;
-      tmpPoint.y = e.clientY;
-      tmpPoint = tmpPoint.matrixTransform(
-        svgRef?.current?.getScreenCTM()?.inverse(),
-      );
-
-      const dragOffset: IPoint = {
-        x: untransformX(tmpPoint.x) - x,
-        y: untransformY(tmpPoint.y) - y,
-      };
-
       const pointerMove = (e: PointerEvent) => {
         e.preventDefault();
+
+        const tmpPoint = svgRef?.current?.createSVGPoint();
         tmpPoint.x = e.clientX;
         tmpPoint.y = e.clientY;
-
         const cursor = tmpPoint.matrixTransform(
           svgRef?.current?.getScreenCTM()?.inverse(),
         );
 
         setCoords(() => ({
-          x: untransformX(cursor.x) - dragOffset.x,
-          y: untransformY(cursor.y) - dragOffset.y,
+          x: untransformX(cursor.x),
+          y: untransformY(cursor.y),
         }));
       };
 
